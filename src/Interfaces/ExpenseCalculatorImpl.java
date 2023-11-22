@@ -2,6 +2,8 @@ package Interfaces;
 
 import Utilities.Expense;
 
+import java.util.List;
+
 public class ExpenseCalculatorImpl implements ExpenseCalculator {
     @Override
     public double calculateExpense(Expense expenses) {
@@ -9,7 +11,7 @@ public class ExpenseCalculatorImpl implements ExpenseCalculator {
     }
 
     @Override
-    public double calculateTotalExpenses(Expense[] expenses) {
+    public double calculateTotalExpenses(List<Expense> expenses) {
         double getAmountTotal = 0;
 
         for(Expense expense : expenses){

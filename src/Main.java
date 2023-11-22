@@ -5,8 +5,10 @@ import Interfaces.ExpenseCalculator;
 import Interfaces.ExpenseCalculatorImpl;
 import Utilities.Expense;
 import Utilities.ExpenseCategory;
+import Utilities.Util;
 
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
     public static int counter = 0;
@@ -14,15 +16,15 @@ public class Main {
     public static void main(String[] args) throws InvalidExpenseException {
 
         Scanner scanner = new Scanner(System.in);
-        boolean isWrongType = false;
+        //boolean isWrongType = false;
         Double amount;
-        int cantMountIn = 0;
         int index = 0;
+        //int cantMountIn = 0;
 
         ExpenseAmountValidator expenseValidator = new ExpenseAmountValidatorImpl();
         ExpenseCalculator calculator = new ExpenseCalculatorImpl();
 
-        do {
+        /*do {
             System.out.print("Ingrese cantidad de gastos a ingresar : ");
             if (scanner.hasNextInt()) {
                 cantMountIn = scanner.nextInt();
@@ -30,11 +32,17 @@ public class Main {
                 System.out.println("Ha ingresado un dato erroneo");
                 scanner.next();
             }
-        }while(isWrongType);
+        }while(isWrongType);*/
 
-        Expense[] expenses = new Expense[cantMountIn];
+        boolean cutLogicVar;
 
-        do {
+        System.out.println("Desea cargar un gasto?: (True or False)");
+        cutLogicVar = scanner.nextBoolean();
+
+        List<Expense> expenses = new ArrayList<>();
+        Map<String, Integer> countCategoryMap = new HashMap<>();
+
+        while(cutLogicVar) {
             Expense expense = new Expense();
             ExpenseCategory category = new ExpenseCategory();
 
@@ -55,22 +63,38 @@ public class Main {
             System.out.print("Ingrese fecha del gasto (dd/mm/yyyy): ");
             String date = scanner.nextLine();
 
+            countCategoryMap.put(name, countCategoryMap.getOrDefault(name, 0) + 1);
+
             expense.setId(counter);
             expense.setAmount(amount);
             expense.setCategory(category);
             expense.setDate(date);
 
-            expenses[index] = expense;
+            expenses.add(expense);
 
             counter++;
             index++;
-        }while(index < cantMountIn);
+
+            System.out.println("Desea hacer otra carga? (True or False)");
+            cutLogicVar = scanner.nextBoolean();
+        };
+
 
         System.out.println("Gastos totales: " + calculator.calculateTotalExpenses(expenses));
 
+        System.out.println("Top 3 de gastos: ");
+        List<Double> amounts = expenses.stream()
+                .map(e -> e.getAmount())
+                .sorted(Comparator.reverseOrder())
+                .limit(3)
+                .collect(Collectors.toList());
+
+        amounts.forEach(e -> System.out.println(e));
+
+        System.out.println("Contador por categoria: ");
+        countCategoryMap.forEach((category, count) -> System.out.println(category + ": " + count));
+
         System.out.println("Detalles de gastos: ");
-         for(Expense expense : expenses){
-            System.out.println(expense.toString());
-         }
+        Util.printElements(expenses);
     }
 }
